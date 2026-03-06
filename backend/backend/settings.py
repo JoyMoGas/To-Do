@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "corsheaders",
+    "rest_framework",
+    "rest_framework_simplejwt",
     "activities",
     "users",
 ]
@@ -122,3 +124,5 @@ STATIC_URL = "static/"
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+
+# REST_FRAMEWORK settings removed for unauthenticated access
