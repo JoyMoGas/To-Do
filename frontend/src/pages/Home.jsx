@@ -11,6 +11,7 @@ const Home = () => {
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editingTaskTitle, setEditingTaskTitle] = useState("");
   const [editingTaskDesc, setEditingTaskDesc] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -29,7 +30,8 @@ const Home = () => {
 
   const addTask = async (e) => {
     e.preventDefault();
-    if (!newTaskTitle.trim()) return;
+    if (!newTaskTitle.trim() || isAdding) return;
+    setIsAdding(true);
     try {
       const response = await axios.post(API_URL, {
         title: newTaskTitle,
@@ -41,6 +43,8 @@ const Home = () => {
       setNewTaskDesc("");
     } catch (error) {
       console.error("Error adding task:", error);
+    } finally {
+      setIsAdding(false);
     }
   };
 
@@ -117,8 +121,16 @@ const Home = () => {
           placeholder="Agrega notas o detalles adicionales..."
           rows={3}
         />
-        <button className="btn" type="submit">
-          Agregar Tarea
+        <button
+          className="btn"
+          type="submit"
+          disabled={isAdding}
+          style={{
+            opacity: isAdding ? 0.7 : 1,
+            cursor: isAdding ? "not-allowed" : "pointer",
+          }}
+        >
+          {isAdding ? "Agregando..." : "Agregar Tarea"}
         </button>
       </form>
 
