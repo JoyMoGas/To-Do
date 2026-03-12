@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../api/auth";
 
 const API_URL =
   import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/activities/";
@@ -12,37 +14,55 @@ const Home = () => {
   const [editingTaskTitle, setEditingTaskTitle] = useState("");
   const [editingTaskDesc, setEditingTaskDesc] = useState("");
   const [isAdding, setIsAdding] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = useCallback(() => {
+    logout();
+    navigate("/login");
+  }, [navigate]);
+
+  const username = localStorage.getItem("username") || "Usuario";
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axios.get(API_URL);
+        const token = localStorage.getItem("accessToken");
+        const response = await axios.get(API_URL, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         const sorted = response.data.sort(
           (a, b) => new Date(b.created_at) - new Date(a.created_at),
         );
         setTasks(sorted);
       } catch (error) {
         console.error("Error fetching tasks:", error);
+        if (error.response && error.response.status === 401) {
+          handleLogout();
+        }
       }
     };
     fetchTasks();
-  }, []);
+  }, [handleLogout]);
 
   const addTask = async (e) => {
     e.preventDefault();
     if (!newTaskTitle.trim() || isAdding) return;
     setIsAdding(true);
     try {
+      const token = localStorage.getItem("accessToken");
       const response = await axios.post(API_URL, {
         title: newTaskTitle,
         description: newTaskDesc,
         completed: false,
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       setTasks([response.data, ...tasks]);
       setNewTaskTitle("");
       setNewTaskDesc("");
     } catch (error) {
       console.error("Error adding task:", error);
+      if (error.response && error.response.status === 401) handleLogout();
     } finally {
       setIsAdding(false);
     }
@@ -50,12 +70,16 @@ const Home = () => {
 
   const toggleTask = async (task) => {
     try {
+      const token = localStorage.getItem("accessToken");
       const response = await axios.patch(`${API_URL}${task.id}/`, {
         completed: !task.completed,
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       setTasks(tasks.map((t) => (t.id === task.id ? response.data : t)));
     } catch (error) {
       console.error("Error toggling task:", error);
+      if (error.response && error.response.status === 401) handleLogout();
     }
   };
 
@@ -65,9 +89,12 @@ const Home = () => {
       return;
     }
     try {
+      const token = localStorage.getItem("accessToken");
       const response = await axios.patch(`${API_URL}${task.id}/`, {
         title: editingTaskTitle,
         description: editingTaskDesc,
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       setTasks(tasks.map((t) => (t.id === task.id ? response.data : t)));
       setEditingTaskId(null);
@@ -75,15 +102,20 @@ const Home = () => {
       setEditingTaskDesc("");
     } catch (error) {
       console.error("Error editing task:", error);
+      if (error.response && error.response.status === 401) handleLogout();
     }
   };
 
   const deleteTask = async (id) => {
     try {
-      await axios.delete(`${API_URL}${id}/`);
+      const token = localStorage.getItem("accessToken");
+      await axios.delete(`${API_URL}${id}/`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setTasks(tasks.filter((t) => t.id !== id));
     } catch (error) {
       console.error("Error deleting task:", error);
+      if (error.response && error.response.status === 401) handleLogout();
     }
   };
 
@@ -101,6 +133,15 @@ const Home = () => {
 
   return (
     <div className="container">
+      <div className="top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+        <div style={{ fontFamily: '"Lora", serif', fontSize: '1.2rem', color: '#5c554e', fontStyle: 'italic' }}>
+          Hola, <span style={{ fontWeight: '600', color: '#3b3530' }}>{username}</span>
+        </div>
+        <button onClick={handleLogout} className="btn-secondary" style={{ padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', border: 'none', fontSize: '0.9rem', fontWeight: '500' }}>
+          Cerrar Sesión
+        </button>
+      </div>
+
       <div className="header">
         <h2>Mi Diario de Tareas</h2>
         <p>Organiza tu día con serenidad y claridad</p>
