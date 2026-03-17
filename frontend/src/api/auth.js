@@ -14,6 +14,18 @@ axios.interceptors.request.use(
   }
 );
 
+export const register = async (username, password) => {
+  const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/activities/";
+  const REGISTER_URL = API_URL.replace("activities/", "register/");
+  
+  const response = await axios.post(REGISTER_URL, {
+    username,
+    password,
+  });
+  
+  return response.data;
+};
+
 export const login = async (username, password) => {
   const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/activities/";
   // la URL del backend token es /api/token/

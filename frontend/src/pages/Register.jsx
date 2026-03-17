@@ -1,18 +1,24 @@
 import { useState } from "react";
-import { login } from "../api/auth";
+import { register, login } from "../api/auth";
 import { useNavigate, Link } from "react-router-dom";
 
-const Login = () => {
+const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    if (!username || !password) {
-      setError("Por favor ingresa usuario y contraseña.");
+    if (!username || !password || !confirmPassword) {
+      setError("Por favor completa todos los campos.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Las contraseñas no coinciden.");
       return;
     }
 
@@ -20,12 +26,17 @@ const Login = () => {
     setError("");
 
     try {
+      await register(username, password);
+      // Tras registrar exitosamente, iniciar sesión automáticamente
       await login(username, password);
-      // redirigir al home tras éxito
       navigate("/");
     } catch (err) {
       console.error(err);
-      setError("Credenciales incorrectas. Intenta nuevamente.");
+      if (err.response?.data?.username) {
+        setError("Ese nombre de usuario ya existe.");
+      } else {
+        setError("Error al registrar usuario. Intenta nuevamente.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -34,11 +45,11 @@ const Login = () => {
   return (
     <div className="container" style={{ maxWidth: "450px", marginTop: "40px" }}>
       <div className="header">
-        <h2>Bienvenido de vuelta</h2>
-        <p>Inicia sesión para ver tus tareas</p>
+        <h2>Crear Cuenta</h2>
+        <p>Regístrate para guardar tus tareas</p>
       </div>
 
-      <form className="task-form" onSubmit={handleLogin} style={{ marginBottom: "0" }}>
+      <form className="task-form" onSubmit={handleRegister} style={{ marginBottom: "0" }}>
         {error && (
           <div style={{ color: "#c95c5c", marginBottom: "10px", textAlign: "center", fontStyle: "italic", fontSize: "0.95rem" }}>
             {error}
@@ -59,6 +70,13 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Contraseña"
         />
+        <input
+          className="input-field"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="Confirmar Contraseña"
+        />
         <button
           className="btn"
           type="submit"
@@ -69,17 +87,16 @@ const Login = () => {
             marginTop: "10px"
           }}
         >
-          {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
+          {isLoading ? "Registrando..." : "Registrarse"}
         </button>
       </form>
-      
       <div style={{ textAlign: "center", marginTop: "20px" }}>
         <p style={{ margin: 0, fontSize: "0.95rem", color: "#666" }}>
-          ¿No tienes cuenta? <Link to="/register" style={{ color: "#3498db", textDecoration: "none", fontWeight: "bold" }}>Regístrate aquí</Link>
+          ¿Ya tienes cuenta? <Link to="/login" style={{ color: "#3498db", textDecoration: "none", fontWeight: "bold" }}>Inicia sesión aquí</Link>
         </p>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default Register;
