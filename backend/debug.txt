@@ -1,0 +1,14 @@
+SystemCheckError: System check identified some issues:
+
+ERRORS:
+users.Profile.profile_picture: (fields.E210) Cannot use ImageField because Pillow is not installed.
+	HINT: Get Pillow at https://pypi.org/project/Pillow/ or run command "python -m pip install Pillow".
+
+WARNINGS:
+activities.Activity: (models.W042) Auto-created primary key used when not defining a primary key type, by default 'django.db.models.AutoField'.
+	HINT: Configure the DEFAULT_AUTO_FIELD setting or the ActivitiesConfig.default_auto_field attribute to point to a subclass of AutoField, e.g. 'django.db.models.BigAutoField'.
+activities.TaskList: (models.W042) Auto-created primary key used when not defining a primary key type, by default 'django.db.models.AutoField'.
+	HINT: Configure the DEFAULT_AUTO_FIELD setting or the ActivitiesConfig.default_auto_field attribute to point to a subclass of AutoField, e.g. 'django.db.models.BigAutoField'.
+
+System check identified 3 issues (0 silenced).
+

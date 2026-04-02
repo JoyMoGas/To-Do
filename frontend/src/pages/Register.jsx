@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { register, login } from "../api/auth";
 import { useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { UserPlus, User, Lock, CheckSquare } from "lucide-react";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -43,58 +45,88 @@ const Register = () => {
   };
 
   return (
-    <div className="container" style={{ maxWidth: "450px", marginTop: "40px" }}>
-      <div className="header">
-        <h2>Crear Cuenta</h2>
-        <p>Regístrate para guardar tus tareas</p>
-      </div>
-
-      <form className="task-form" onSubmit={handleRegister} style={{ marginBottom: "0" }}>
-        {error && (
-          <div style={{ color: "#c95c5c", marginBottom: "10px", textAlign: "center", fontStyle: "italic", fontSize: "0.95rem" }}>
-            {error}
+    <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-color)', padding: '24px' }}>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="glass-panel" 
+        style={{ width: '100%', maxWidth: '420px', padding: '40px', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.08)' }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '60px', height: '60px', borderRadius: '16px', background: 'var(--accent-color)', marginBottom: '20px' }}>
+            <CheckSquare size={32} color="white" />
           </div>
-        )}
-        <input
-          className="input-field"
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Usuario"
-          autoFocus
-        />
-        <input
-          className="input-field"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Contraseña"
-        />
-        <input
-          className="input-field"
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          placeholder="Confirmar Contraseña"
-        />
-        <button
-          className="btn"
-          type="submit"
-          disabled={isLoading}
-          style={{
-            opacity: isLoading ? 0.7 : 1,
-            cursor: isLoading ? "not-allowed" : "pointer",
-            marginTop: "10px"
-          }}
-        >
-          {isLoading ? "Registrando..." : "Registrarse"}
-        </button>
-      </form>
-      <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <p style={{ margin: 0, fontSize: "0.95rem", color: "#666" }}>
-          ¿Ya tienes cuenta? <Link to="/login" style={{ color: "#3498db", textDecoration: "none", fontWeight: "bold" }}>Inicia sesión aquí</Link>
-        </p>
-      </div>
+          <h2 style={{ fontSize: '1.8rem', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '8px' }}>Crear Cuenta</h2>
+          <p style={{ color: 'var(--text-secondary)' }}>Únete para organizar tus proyectos</p>
+        </div>
+
+        <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {error && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ padding: '12px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', borderRadius: '8px', fontSize: '0.9rem', textAlign: 'center', fontWeight: '500' }}>
+              {error}
+            </motion.div>
+          )}
+          
+          <div>
+            <div style={{ position: 'relative' }}>
+              <User size={20} style={{ position: 'absolute', left: '16px', top: '14px', color: 'var(--text-secondary)' }} />
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Nombre de usuario"
+                autoFocus
+                style={{ width: '100%', padding: '14px 16px 14px 48px', borderRadius: '12px', border: '1px solid var(--border-color)', background: 'var(--bg-sidebar)', color: 'var(--text-primary)', fontSize: '1rem', outline: 'none', transition: 'border-color 0.2s' }}
+              />
+            </div>
+          </div>
+
+          <div>
+            <div style={{ position: 'relative' }}>
+              <Lock size={20} style={{ position: 'absolute', left: '16px', top: '14px', color: 'var(--text-secondary)' }} />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Contraseña"
+                style={{ width: '100%', padding: '14px 16px 14px 48px', borderRadius: '12px', border: '1px solid var(--border-color)', background: 'var(--bg-sidebar)', color: 'var(--text-primary)', fontSize: '1rem', outline: 'none', transition: 'border-color 0.2s' }}
+              />
+            </div>
+          </div>
+
+          <div>
+            <div style={{ position: 'relative' }}>
+              <Lock size={20} style={{ position: 'absolute', left: '16px', top: '14px', color: 'var(--text-secondary)' }} />
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirmar Contraseña"
+                style={{ width: '100%', padding: '14px 16px 14px 48px', borderRadius: '12px', border: '1px solid var(--border-color)', background: 'var(--bg-sidebar)', color: 'var(--text-primary)', fontSize: '1rem', outline: 'none', transition: 'border-color 0.2s' }}
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%', padding: '14px', marginTop: '8px', background: 'var(--accent-color)', color: 'white', borderRadius: '12px', fontWeight: '600', fontSize: '1.05rem', opacity: isLoading ? 0.7 : 1, transition: 'all 0.2s', border: 'none', cursor: 'pointer' }}
+          >
+            {isLoading ? "Registrando..." : (
+              <>
+                Registrarse <UserPlus size={20} />
+              </>
+            )}
+          </button>
+        </form>
+        
+        <div style={{ textAlign: "center", marginTop: "32px", paddingTop: "24px", borderTop: "1px solid var(--border-color)" }}>
+          <p style={{ margin: 0, fontSize: "0.95rem", color: "var(--text-secondary)" }}>
+            ¿Ya tienes cuenta? <Link to="/login" style={{ color: "var(--accent-color)", textDecoration: "none", fontWeight: "600" }}>Inicia sesión aquí</Link>
+          </p>
+        </div>
+      </motion.div>
     </div>
   );
 };

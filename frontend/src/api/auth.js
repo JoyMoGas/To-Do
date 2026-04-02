@@ -1,6 +1,5 @@
 import axios from "axios";
 
-// Interceptar todas las peticiones para agregar el token
 axios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
@@ -16,7 +15,8 @@ axios.interceptors.request.use(
 
 export const register = async (username, password) => {
   const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/activities/";
-  const REGISTER_URL = API_URL.replace("activities/", "register/");
+  const BASE_URL = API_URL.replace("activities/", "");
+  const REGISTER_URL = `${BASE_URL}register/`;
   
   const response = await axios.post(REGISTER_URL, {
     username,
@@ -28,8 +28,8 @@ export const register = async (username, password) => {
 
 export const login = async (username, password) => {
   const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api/activities/";
-  // la URL del backend token es /api/token/
-  const TOKEN_URL = API_URL.replace("activities/", "token/"); 
+  const BASE_URL = API_URL.replace("activities/", "");
+  const TOKEN_URL = `${BASE_URL}token/`; 
   
   const response = await axios.post(TOKEN_URL, {
     username,
@@ -40,7 +40,6 @@ export const login = async (username, password) => {
     localStorage.setItem("accessToken", response.data.access);
     localStorage.setItem("refreshToken", response.data.refresh);
     
-    // Decodificar el JWT para obtener el nombre de usuario de forma sencilla
     const base64Url = response.data.access.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
